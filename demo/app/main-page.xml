@@ -1,7 +1,7 @@
 <Page xmlns="http://schemas.nativescript.org/tns.xsd" loaded="pageLoaded" class="page">
   <StackLayout class="p-20">
     <Label text="{{ message }}" class="t-20 text-center c-black" textWrap="true"/>
-    <Button tap="{{ doReceiveCall }}" text="Receive call"/>
-    <Button tap="{{ doEndCall }}" text="End call"/>
+    <Button tap="{{ doReceiveCall }}" text="Receive call" class="btn"/>
+    <Button tap="{{ doEndCall }}" text="End call" class="btn"/>
   </StackLayout>
 </Page>

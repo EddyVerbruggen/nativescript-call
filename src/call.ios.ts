@@ -8,17 +8,22 @@ export class TNSCall implements TNSCallBase {
 
   receiveCall(options?: TNSCallReceiveCallOptions): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      TNSCall.handle = CXHandle.alloc().initWithTypeValue(CXHandleType.PhoneNumber, "+31650298958");
+      TNSCall.handle = CXHandle.alloc().initWithTypeValue(
+          !options || options.handleType === "PHONE" ? CXHandleType.PhoneNumber : CXHandleType.EmailAddress,
+          options.handleId);
+
       const callUUID = NSUUID.new();
       const callUpdate = CXCallUpdate.new();
 
       callUpdate.remoteHandle = TNSCall.handle;
-      callUpdate.hasVideo = false;
-      callUpdate.localizedCallerName = "Sjaak Trekhaak";
+      if (options.callerName) {
+        callUpdate.localizedCallerName = options.callerName;
+      }
+      callUpdate.hasVideo = options && options.hasVideo;
+      callUpdate.supportsDTMF = options && options.supportsDTMF;
       callUpdate.supportsGrouping = false;
       callUpdate.supportsUngrouping = false;
       callUpdate.supportsHolding = false;
-      callUpdate.supportsDTMF = false;
 
       this.ensureProvider();
       TNSCall.provider.reportNewIncomingCallWithUUIDUpdateCompletion(callUUID, callUpdate, (error: NSError) => {
@@ -34,18 +39,12 @@ export class TNSCall implements TNSCallBase {
 
   endCall(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      console.log(">>>> this.callController: " + TNSCall.callController);
-      console.log(">>>> this.callController.callObserver: " + TNSCall.callController.callObserver);
       const calls: NSArray<CXCall> = TNSCall.callController.callObserver.calls;
       if (calls.count === 1) {
-        console.log("call: " + calls[0]);
-        console.log("call uuid: " + calls[0].UUID);
-
         const endCallAction: CXEndCallAction = CXEndCallAction.alloc().initWithCallUUID(calls[0].UUID);
         const transaction: CXTransaction = CXTransaction.alloc().initWithAction(endCallAction);
         TNSCall.callController.requestTransactionCompletion(transaction, (error: NSError) => {
           if (error === null) {
-            console.log("requestTransactionCompletion OK");
             resolve();
           } else {
             console.log("Error ending call: " + error.localizedDescription);
@@ -62,7 +61,6 @@ export class TNSCall implements TNSCallBase {
     if (TNSCall.provider) {
       return;
     }
-    console.log("ensuring provider..");
 
     const appName = NSBundle.mainBundle.objectForInfoDictionaryKey("CFBundleDisplayName");
     const providerConfiguration = CXProviderConfiguration.alloc().initWithLocalizedName(appName);
@@ -70,14 +68,10 @@ export class TNSCall implements TNSCallBase {
     providerConfiguration.maximumCallsPerCallGroup = 1;
 
     const handleTypes = NSMutableSet.new();
+    handleTypes.addObject(CXHandleType.EmailAddress);
     handleTypes.addObject(CXHandleType.PhoneNumber);
     providerConfiguration.supportedHandleTypes = <any>handleTypes;
-    providerConfiguration.supportsVideo = false;
-
-    // see https://github.com/WebsiteBeaver/CordovaCall/blob/b8ccb0d2684b3c769b27b33711df5113f2e874f4/src/ios/CordovaCall.m#L50
-    // if (@available(iOS 11.0, *)) {
-    //   providerConfiguration.includesCallsInRecents = NO;
-    // }
+    providerConfiguration.supportsVideo = true;
 
     TNSCall.provider = CXProvider.alloc().initWithConfiguration(providerConfiguration);
     TNSCall.provider.setDelegateQueue(CXProviderDelegateImpl.initWithOwner(new WeakRef(this)), null);
@@ -136,18 +130,15 @@ class CXProviderDelegateImpl extends NSObject implements CXProviderDelegate {
     console.log("delegate, providerPerformAnswerCallAction");
   }
 
+  // this could be used to notify the app of 'rejected' and 'hangup' events (only logging them for now)
   providerPerformEndCallAction(provider: CXProvider, action: CXEndCallAction): void {
-    console.log("delegate, providerPerformEndCallAction");
-    console.log(">>>> TNSCall.callController: " + TNSCall.callController);
     const calls: NSArray<CXCall> = TNSCall.callController.callObserver.calls;
     if (calls.count === 1) {
       if (calls[0].hasConnected) {
-        console.log("Ended connected call");
+        console.log("Ended connected call (hang up)");
       } else {
-        console.log("Ended non-connected call");
+        console.log("Ended non-connected call (rejected)");
       }
-      console.log("call: " + calls[0]);
-      console.log("call uuid: " + calls[0].UUID);
     }
   }
 
