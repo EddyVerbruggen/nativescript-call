@@ -12,13 +12,15 @@ export class HelloWorldModel extends Observable {
   }
 
   doReceiveCall() {
-    this.tnsCall.receiveCall({})
-        .then(() => {
-          console.log("Received call");
-          setTimeout(() => {
-            this.doEndCall();
-          }, 2500);
+    this.tnsCall.receiveCall(
+        {
+          callerName: "Donald J. Drumpf",
+          hasVideo: true,
+          supportsDTMF: true,
+          handleType: "PHONE",
+          handleId: "+31612345678"
         })
+        .then(() => console.log("Receive call success"))
         .catch(err => console.log("Error receiving call: " + err));
   }
 

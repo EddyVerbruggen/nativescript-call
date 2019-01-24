@@ -1,4 +1,4 @@
-# NativeScript Keyboard Toolbar
+# NativeScript Call plugin
 
 [![Build Status][build-status]][build-url]
 [![NPM version][npm-image]][npm-url]
@@ -7,13 +7,11 @@
 
 [build-status]:https://travis-ci.org/EddyVerbruggen/nativescript-call.svg?branch=master
 [build-url]:https://travis-ci.org/EddyVerbruggen/nativescript-call
-[npm-image]:http://img.shields.io/npm/v/nativescript-keyboard-toolbar.svg
-[npm-url]:https://npmjs.org/package/nativescript-keyboard-toolbar
-[downloads-image]:http://img.shields.io/npm/dm/nativescript-keyboard-toolbar.svg
+[npm-image]:http://img.shields.io/npm/v/nativescript-call.svg
+[npm-url]:https://npmjs.org/package/nativescript-call
+[downloads-image]:http://img.shields.io/npm/dm/nativescript-call.svg
 [twitter-image]:https://img.shields.io/twitter/follow/eddyverbruggen.svg?style=social&label=Follow%20me
 [twitter-url]:https://twitter.com/eddyverbruggen
-
-> Currently iOS only
 
 ## Dude, I already have a Phone app on my phone..
 Sure 😅
@@ -47,8 +45,8 @@ The properties you can pass to this method are:
 
 | Property | Type | Description |
 | --- | --- | --- |
-| handleType | [`TNSCallHandleType`](https://github.com/EddyVerbruggen/nativescript-call/blob/7fec47292ba3e1452bb001993d5ba88f0ad9dd1d/src/call.common.ts#L3) | Either `"PHONE"` (default) or `"EMAIL"` |
-| handleId | string | Either a phone number when `handleType` is `"PHONE"`, or an email address when `handleType` is `"EMAIL"` |
+| handleType | [`TNSCallHandleType`](https://github.com/EddyVerbruggen/nativescript-call/blob/7fec47292ba3e1452bb001993d5ba88f0ad9dd1d/src/call.common.ts#L3) | Either `"PHONE"` (default) or `"EMAIL"`. |
+| handleId | `string` | Either a phone number when `handleType` is `"PHONE"`, or an email address when `handleType` is `"EMAIL"`. |
 | callerName | `string` | The name to be displayed on the call UI. |
 | hasVideo | `boolean` | Whether or not this call supports video. Default `false`. |
 | supportsDTMF | `boolean` | Whether the call can send DTMF (dual tone multifrequency) tones via hard pause digits or in-call keypad entries. Default `false`. |
@@ -65,12 +63,7 @@ tnsCall.receiveCall(
       hasVideo: true,
       supportsDTMF: true
     })
-    .then(() => {
-      console.log("Received call");
-      setTimeout(() => {
-        this.doEndCall();
-      }, 2500);
-    })
+    .then(() => console.log("Receive call success"))
     .catch(err => console.log("Error receiving call: " + err));
 ```
 
