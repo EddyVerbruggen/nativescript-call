@@ -1,40 +1,86 @@
-# Your Plugin Name
+# NativeScript Keyboard Toolbar
 
-Add your plugin badges here. See [nativescript-urlhandler](https://github.com/hypery2k/nativescript-urlhandler) for example.
+[![Build Status][build-status]][build-url]
+[![NPM version][npm-image]][npm-url]
+[![Downloads][downloads-image]][npm-url]
+[![Twitter Follow][twitter-image]][twitter-url]
 
-Then describe what's the purpose of your plugin. 
+[build-status]:https://travis-ci.org/EddyVerbruggen/nativescript-call.svg?branch=master
+[build-url]:https://travis-ci.org/EddyVerbruggen/nativescript-call
+[npm-image]:http://img.shields.io/npm/v/nativescript-keyboard-toolbar.svg
+[npm-url]:https://npmjs.org/package/nativescript-keyboard-toolbar
+[downloads-image]:http://img.shields.io/npm/dm/nativescript-keyboard-toolbar.svg
+[twitter-image]:https://img.shields.io/twitter/follow/eddyverbruggen.svg?style=social&label=Follow%20me
+[twitter-url]:https://twitter.com/eddyverbruggen
 
-In case you develop UI plugin, this is where you can add some screenshots.
+> Currently iOS only
 
-## (Optional) Prerequisites / Requirements
+## Dude, I already have a Phone app on my phone..
+Sure 😅
 
-Describe the prerequisites that the user need to have installed before using your plugin. See [nativescript-firebase plugin](https://github.com/eddyverbruggen/nativescript-plugin-firebase) for example.
+But what if your app supports VOIP / WebRTC calls? You'll want to have the operating system pop up the
+native call dialog, right? That's where this plugin comes in.
+
+Currently iOS only, where we leverage `CallKit`, which is part of the iOS SDK since iOS 10.
 
 ## Installation
-
-Describe your plugin installation steps. Ideally it would be something like:
-
-```javascript
-tns plugin add <your-plugin-name>
+```bash
+tns plugin add nativescript-call
 ```
 
-## Usage 
+## Demo
+Check the source in the [demo](/demo) folder, or run it on your own device:
 
-Describe any usage specifics for your plugin. Give examples for Android, iOS, Angular if needed. See [nativescript-drop-down](https://www.npmjs.com/package/nativescript-drop-down) for example.
-	
-	```javascript
-    Usage code snippets here
-    ```)
+```bash
+git clone https://github.com/EddyVerbruggen/nativescript-call
+cd nativescript-call/src
+npm i
+npm run demo.ios # or .android
+```
+
+> Usage in NativeScript-Angular and NativeScript-Vue is nothing different from what you'd do in NativeScript-Core.
 
 ## API
 
-Describe your plugin methods and properties here. See [nativescript-feedback](https://github.com/EddyVerbruggen/nativescript-feedback) for example.
-    
-| Property | Default | Description |
-| --- | --- | --- |
-| some property | property default value | property description, default values, etc.. |
-| another property | property default value | property description, default values, etc.. |
-    
-## License
+### `receiveCall`
+The properties you can pass to this method are:
 
-Apache License Version 2.0, January 2004
+| Property | Type | Description |
+| --- | --- | --- |
+| handleType | [`TNSCallHandleType`](https://github.com/EddyVerbruggen/nativescript-call/blob/7fec47292ba3e1452bb001993d5ba88f0ad9dd1d/src/call.common.ts#L3) | Either `"PHONE"` (default) or `"EMAIL"` |
+| handleId | string | Either a phone number when `handleType` is `"PHONE"`, or an email address when `handleType` is `"EMAIL"` |
+| callerName | `string` | The name to be displayed on the call UI. |
+| hasVideo | `boolean` | Whether or not this call supports video. Default `false`. |
+| supportsDTMF | `boolean` | Whether the call can send DTMF (dual tone multifrequency) tones via hard pause digits or in-call keypad entries. Default `false`. |
+
+```typescript
+import { TNSCall } from "nativescript-call";
+const tnsCall = new TNSCall();
+
+tnsCall.receiveCall(
+    {
+      handleType: "PHONE",
+      handleId: "+31612345678",
+      callerName: "Donald J. Drumpf",
+      hasVideo: true,
+      supportsDTMF: true
+    })
+    .then(() => {
+      console.log("Received call");
+      setTimeout(() => {
+        this.doEndCall();
+      }, 2500);
+    })
+    .catch(err => console.log("Error receiving call: " + err));
+```
+
+### `endCall`
+
+```typescript
+import { TNSCall } from "nativescript-call";
+const tnsCall = new TNSCall();
+
+tnsCall.endCall()
+    .then(() => console.log("Ended call"))
+    .catch(err => console.log("Error ending call: " + err));
+```
