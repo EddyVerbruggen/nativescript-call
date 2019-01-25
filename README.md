@@ -33,7 +33,7 @@ Check the source in the [demo](/demo) folder, or run it on your own device:
 git clone https://github.com/EddyVerbruggen/nativescript-call
 cd nativescript-call/src
 npm i
-npm run demo.ios # or .android
+npm run demo.ios
 ```
 
 > Usage in NativeScript-Angular and NativeScript-Vue is nothing different from what you'd do in NativeScript-Core.
