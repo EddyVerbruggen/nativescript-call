@@ -1,5 +1,4 @@
 import { TNSCall as TNSCallBase, TNSCallReceiveCallOptions } from "./call.common";
-import * as app from "tns-core-modules/application";
 
 export class TNSCall implements TNSCallBase {
   static callController: CXCallController;
@@ -25,7 +24,8 @@ export class TNSCall implements TNSCallBase {
       callUpdate.supportsUngrouping = false;
       callUpdate.supportsHolding = false;
 
-      this.ensureProvider();
+      this.ensureProvider(options);
+
       TNSCall.provider.reportNewIncomingCallWithUUIDUpdateCompletion(callUUID, callUpdate, (error: NSError) => {
         if (error === null) {
           resolve();
@@ -57,12 +57,13 @@ export class TNSCall implements TNSCallBase {
     });
   }
 
-  private ensureProvider(): void {
+  private ensureProvider(options?: TNSCallReceiveCallOptions): void {
+    // note that with this design, changed options will not get applied
     if (TNSCall.provider) {
       return;
     }
 
-    const appName = NSBundle.mainBundle.objectForInfoDictionaryKey("CFBundleDisplayName");
+    const appName = options.appName || NSBundle.mainBundle.objectForInfoDictionaryKey("CFBundleDisplayName");
     const providerConfiguration = CXProviderConfiguration.alloc().initWithLocalizedName(appName);
     providerConfiguration.maximumCallGroups = 1;
     providerConfiguration.maximumCallsPerCallGroup = 1;

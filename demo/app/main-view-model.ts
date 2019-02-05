@@ -14,6 +14,7 @@ export class HelloWorldModel extends Observable {
   doReceiveCall() {
     this.tnsCall.receiveCall(
         {
+          appName: "My App",
           callerName: "Donald J. Drumpf",
           hasVideo: true,
           supportsDTMF: true,

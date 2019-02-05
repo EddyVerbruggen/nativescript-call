@@ -6,6 +6,11 @@ export interface TNSCallReceiveCallOptions {
   callerName?: string;
 
   /**
+   * Default the name of your app.
+   */
+  appName?: string;
+
+  /**
    * Default "PHONE"
    */
   handleType?: TNSCallHandleType;
