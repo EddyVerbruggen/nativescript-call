@@ -1,6 +1,6 @@
 {
   "name": "nativescript-call",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Your awesome NativeScript plugin.",
   "main": "call",
   "typings": "index.d.ts",

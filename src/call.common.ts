@@ -1,5 +1,3 @@
-import { Image } from "tns-core-modules/ui/image";
-
 export type TNSCallHandleType = "PHONE" | "EMAIL";
 
 export interface TNSCallReceiveCallOptions {
@@ -36,6 +34,10 @@ export interface TNSCallReceiveCallOptions {
    * Default false
    */
   supportsDTMF?: boolean;
+
+  onSpeakerOn?: () => void;
+
+  onSpeakerOff?: () => void;
 }
 
 export declare class TNSCall {

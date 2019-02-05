@@ -20,7 +20,9 @@ export class HelloWorldModel extends Observable {
           hasVideo: true,
           supportsDTMF: true,
           handleType: "PHONE",
-          handleId: "+31612345678"
+          handleId: "+31612345678",
+          onSpeakerOn: () => console.log("SPEAKER ON"),
+          onSpeakerOff: () => console.log("SPEAKER OFF")
         })
         .then(() => console.log("Receive call success"))
         .catch(err => console.log("Error receiving call: " + err));

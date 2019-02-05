@@ -1,9 +1,11 @@
 import { TNSCall as TNSCallBase, TNSCallReceiveCallOptions } from "./call.common";
+import * as app from "tns-core-modules/application";
 
 export class TNSCall implements TNSCallBase {
   static callController: CXCallController;
   private static provider: CXProvider;
   private static handle: CXHandle;
+  private receiveCallNotificationObserver: any;
 
   receiveCall(options?: TNSCallReceiveCallOptions): Promise<void> {
     return new Promise<void>((resolve, reject) => {
@@ -25,6 +27,26 @@ export class TNSCall implements TNSCallBase {
       callUpdate.supportsHolding = false;
 
       this.ensureProvider(options);
+
+      this.removeReceiveCallNotificationObserver();
+
+      if (options.onSpeakerOn || options.onSpeakerOff) {
+        this.receiveCallNotificationObserver = app.ios.addNotificationObserver(AVAudioSessionRouteChangeNotification, ((notification: NSNotification) => {
+          const reason: number = notification.userInfo.objectForKey(AVAudioSessionRouteChangeReasonKey);
+          const previousRoute: AVAudioSessionRouteDescription = notification.userInfo.objectForKey(AVAudioSessionRouteChangePreviousRouteKey);
+          const outputs = previousRoute.outputs;
+
+          if (outputs.count > 0) {
+            const output: AVAudioSessionPortDescription = outputs.objectAtIndex(0);
+            if (output.portType !== "Speaker" && reason === 4) {
+              options.onSpeakerOn && options.onSpeakerOn();
+            } else if (output.portType === "Speaker" && reason === 3) {
+              options.onSpeakerOff && options.onSpeakerOff();
+            }
+          }
+
+        }));
+      }
 
       TNSCall.provider.reportNewIncomingCallWithUUIDUpdateCompletion(callUUID, callUpdate, (error: NSError) => {
         if (error === null) {
@@ -54,6 +76,7 @@ export class TNSCall implements TNSCallBase {
       } else {
         reject("No calls active");
       }
+      this.removeReceiveCallNotificationObserver();
     });
   }
 
@@ -84,6 +107,13 @@ export class TNSCall implements TNSCallBase {
       TNSCall.provider = CXProvider.alloc().initWithConfiguration(providerConfiguration);
       TNSCall.provider.setDelegateQueue(CXProviderDelegateImpl.initWithOwner(new WeakRef(this)), null);
       TNSCall.callController = CXCallController.new();
+    }
+  }
+
+  private removeReceiveCallNotificationObserver() {
+    if (this.receiveCallNotificationObserver) {
+      app.ios.removeNotificationObserver(this.receiveCallNotificationObserver, AVAudioSessionRouteChangeNotification);
+      this.receiveCallNotificationObserver = undefined;
     }
   }
 }

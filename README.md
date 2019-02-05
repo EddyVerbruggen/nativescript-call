@@ -45,11 +45,20 @@ The properties you can pass to this method are:
 
 | Property | Type | Description |
 | --- | --- | --- |
+| appName | `string` | The app's name, as shown on the caller screen. Default the name of your app. |
+| icon | `string` | The name of an icon to show for your app. Loaded from the App_Resources folder (see the demo). |
 | handleType | [`TNSCallHandleType`](https://github.com/EddyVerbruggen/nativescript-call/blob/7fec47292ba3e1452bb001993d5ba88f0ad9dd1d/src/call.common.ts#L3) | Either `"PHONE"` (default) or `"EMAIL"`. |
 | handleId | `string` | Either a phone number when `handleType` is `"PHONE"`, or an email address when `handleType` is `"EMAIL"`. |
 | callerName | `string` | The name to be displayed on the call UI. |
 | hasVideo | `boolean` | Whether or not this call supports video. Default `false`. |
 | supportsDTMF | `boolean` | Whether the call can send DTMF (dual tone multifrequency) tones via hard pause digits or in-call keypad entries. Default `false`. |
+
+The event handlers you can pass to this method are:
+
+| Name | Description |
+| --- | --- | --- |
+| onSpeakerOn | Triggered when the speaker is turned on. |
+| onSpeakerOff | Triggered when the speaker is turned off. |
 
 ```typescript
 import { TNSCall } from "nativescript-call";
@@ -57,11 +66,15 @@ const tnsCall = new TNSCall();
 
 tnsCall.receiveCall(
     {
+      appName: "My App",
+      icon: "download-from-cloud", // see demo/app/App_Resources/iOS
       handleType: "PHONE",
       handleId: "+31612345678",
       callerName: "Donald J. Drumpf",
       hasVideo: true,
-      supportsDTMF: true
+      supportsDTMF: true,
+      onSpeakerOn: () => console.log("Speaker ON"),
+      onSpeakerOff: () => console.log("Speaker OFF")
     })
     .then(() => console.log("Receive call success"))
     .catch(err => console.log("Error receiving call: " + err));
