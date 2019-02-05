@@ -15,6 +15,7 @@ export class HelloWorldModel extends Observable {
     this.tnsCall.receiveCall(
         {
           appName: "My App",
+          icon: "download-from-cloud",
           callerName: "Donald J. Drumpf",
           hasVideo: true,
           supportsDTMF: true,

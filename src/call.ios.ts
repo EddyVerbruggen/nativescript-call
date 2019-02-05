@@ -58,15 +58,19 @@ export class TNSCall implements TNSCallBase {
   }
 
   private ensureProvider(options?: TNSCallReceiveCallOptions): void {
-    // note that with this design, changed options will not get applied
-    if (TNSCall.provider) {
-      return;
-    }
-
     const appName = options.appName || NSBundle.mainBundle.objectForInfoDictionaryKey("CFBundleDisplayName");
     const providerConfiguration = CXProviderConfiguration.alloc().initWithLocalizedName(appName);
     providerConfiguration.maximumCallGroups = 1;
     providerConfiguration.maximumCallsPerCallGroup = 1;
+
+    if (options.icon) {
+      const iconImage = UIImage.imageNamed(options.icon);
+      if (iconImage) {
+        providerConfiguration.iconTemplateImageData = UIImagePNGRepresentation(iconImage);
+      } else {
+        console.log("icon not found: " + options.icon);
+      }
+    }
 
     const handleTypes = NSMutableSet.new();
     handleTypes.addObject(CXHandleType.EmailAddress);
@@ -74,9 +78,13 @@ export class TNSCall implements TNSCallBase {
     providerConfiguration.supportedHandleTypes = <any>handleTypes;
     providerConfiguration.supportsVideo = true;
 
-    TNSCall.provider = CXProvider.alloc().initWithConfiguration(providerConfiguration);
-    TNSCall.provider.setDelegateQueue(CXProviderDelegateImpl.initWithOwner(new WeakRef(this)), null);
-    TNSCall.callController = CXCallController.new();
+    if (TNSCall.provider) {
+      TNSCall.provider.configuration = providerConfiguration;
+    } else {
+      TNSCall.provider = CXProvider.alloc().initWithConfiguration(providerConfiguration);
+      TNSCall.provider.setDelegateQueue(CXProviderDelegateImpl.initWithOwner(new WeakRef(this)), null);
+      TNSCall.callController = CXCallController.new();
+    }
   }
 }
 

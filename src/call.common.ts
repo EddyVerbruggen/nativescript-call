@@ -1,4 +1,4 @@
-import * as app from "tns-core-modules/application";
+import { Image } from "tns-core-modules/ui/image";
 
 export type TNSCallHandleType = "PHONE" | "EMAIL";
 
@@ -9,6 +9,11 @@ export interface TNSCallReceiveCallOptions {
    * Default the name of your app.
    */
   appName?: string;
+
+  /**
+   * The name of an icon to show for your app. Loaded from the App_Resources folder.
+   */
+  icon?: string;
 
   /**
    * Default "PHONE"
