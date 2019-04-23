@@ -90,3 +90,10 @@ tnsCall.endCall()
     .then(() => console.log("Ended call"))
     .catch(err => console.log("Error ending call: " + err));
 ```
+
+## Receiving a call when the app is not running
+Either use [Pusher](https://github.com/noodlewerk/NWPusher), or this CURL command:
+
+```shell
+curl -v -d '{"userInfo":"eddy.verbruggen","aps":{"sound":"default"},"title":"Eddy Verbruggen","callType":"VIDEO"}' --header "apns-topic: com.app.sample" --http2 --cert ~/Desktop/voip/ck.pem:ggk12 https://api.development.push.apple.com/3/device/DEVICE_VOIP_TOKEN
+```
