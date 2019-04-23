@@ -1,5 +1,5 @@
 import { TNSCall as TNSCallBase, TNSCallReceiveCallOptions } from "./call.common";
-import * as app from "tns-core-modules/application";
+import { ios as iosApp } from "tns-core-modules/application";
 
 export class TNSCall implements TNSCallBase {
   static callController: CXCallController;
@@ -31,7 +31,7 @@ export class TNSCall implements TNSCallBase {
       this.removeReceiveCallNotificationObserver();
 
       if (options.onSpeakerOn || options.onSpeakerOff) {
-        this.receiveCallNotificationObserver = app.ios.addNotificationObserver(AVAudioSessionRouteChangeNotification, ((notification: NSNotification) => {
+        this.receiveCallNotificationObserver = iosApp.addNotificationObserver(AVAudioSessionRouteChangeNotification, ((notification: NSNotification) => {
           const reason: number = notification.userInfo.objectForKey(AVAudioSessionRouteChangeReasonKey);
           const previousRoute: AVAudioSessionRouteDescription = notification.userInfo.objectForKey(AVAudioSessionRouteChangePreviousRouteKey);
           const outputs = previousRoute.outputs;
@@ -112,7 +112,7 @@ export class TNSCall implements TNSCallBase {
 
   private removeReceiveCallNotificationObserver() {
     if (this.receiveCallNotificationObserver) {
-      app.ios.removeNotificationObserver(this.receiveCallNotificationObserver, AVAudioSessionRouteChangeNotification);
+      iosApp.removeNotificationObserver(this.receiveCallNotificationObserver, AVAudioSessionRouteChangeNotification);
       this.receiveCallNotificationObserver = undefined;
     }
   }
